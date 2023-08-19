@@ -1,0 +1,30 @@
+.json-table {
+    margin-top: 15px;
+    border: 1px solid #e0e0e0;
+}
+
+.json-table__cell {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    overflow: hidden;
+    border-left: 1px solid #e0e0e0;
+}
+
+.json-table__cell-inner {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0 8px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.json-table__cell_first {
+    border-left: none;
+}
