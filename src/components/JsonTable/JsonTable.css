@@ -6,6 +6,8 @@
 .json-table__cell {
     box-sizing: border-box;
     width: 100%;
+    min-width: 100px;
+    max-width: 50vw;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -27,4 +29,22 @@
 
 .json-table__cell_first {
     border-left: none;
+}
+
+.json-table__cell-form {
+    display: flex;
+}
+
+.json-table__cell-form-input {
+    flex-grow: 1;
+    min-width: 50px;
+}
+
+.json-table__cell-form-editor {
+    flex-grow: 1;
+    min-width: 30vw;
+}
+
+.json-table__cell-form-button {
+    flex-grow: 0;
 }

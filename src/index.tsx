@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 
 import './index.css';
 import 'react-virtualized/styles.css';
+import 'rc-tooltip/assets/bootstrap_white.css';
 
 import App from './App';
 import reportWebVitals from './reportWebVitals';
