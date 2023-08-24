@@ -1,107 +1,112 @@
-import { useState, type FC, type ReactNode, useEffect, useCallback } from 'react';
-import { Grid, AutoSizer, ColumnSizer, CellMeasurerCache, CellMeasurer } from 'react-virtualized';
+import React, {
+	useState, useEffect, useCallback,
+} from 'react';
+import { Grid, AutoSizer, ColumnSizer } from 'react-virtualized';
 import ContentLoader from 'react-content-loader';
+import { useWindowSize } from 'react-use';
 
 import { cnJsonTable } from './JsonTable.classname';
 import { DataType } from './types';
 import './JsonTable.css';
 import { useJsonData } from './hooks/useJsonData';
-import { worker as workerScript } from '../../workers/worker';
+// @ts-expect-error typescript cannot find module
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import Worker from 'worker-loader!../../workers/worker.ts';
 
-const worker = new Worker(workerScript);
+const noContent = () => 'n/a';
 
-export const JsonTable: FC = () => {
-    const [data, setData] = useState<undefined|DataType>(undefined);
-    const [loading, setLoading] = useState(false);
+export function JsonTable() {
+	const [data, setData] = useState<undefined|DataType>(undefined);
+	const [loading, setLoading] = useState(false);
 
-    const {
-        keys,
-        getColumnWidth,
-        cellRenderer,
-    } = useJsonData(data);
+	const { height } = useWindowSize();
+	const {
+		keys,
+		getColumnWidth,
+		cellRenderer,
+	} = useJsonData(data);
 
-    const handleMessage = useCallback((event: MessageEvent) => {
-        console.log(event.data);
-    }, []);
+	const widthGetter = useCallback(({ index } : { index: number }) => getColumnWidth(index), [getColumnWidth]);
 
-    useEffect(() => {
-        if (data !== undefined || loading) {
-            return;
-        }
+	const handleMessage = useCallback((event: MessageEvent) => {
+		setData(event.data.slice(0, 1000));
+	}, []);
 
-        setLoading(true);
+	useEffect(() => {
+		if (data !== undefined || loading) {
+			return;
+		}
 
-        console.log('post message');
+		setLoading(true);
 
-        worker.postMessage([
-            'https://api.json-generator.com/templates/Pji4v88Ud9bo/data',
-            '0dnlg0e3n22tnxtyzj125ytqtk714i2cnso0tm5m'
-        ]);
+		const worker = new Worker();
 
-        worker.addEventListener('message', handleMessage);
+		worker.postMessage([
+			'https://api.json-generator.com/templates/Pji4v88Ud9bo/data',
+			'0dnlg0e3n22tnxtyzj125ytqtk714i2cnso0tm5m',
+		]);
 
-        return () => {
-            worker.removeEventListener('message', handleMessage);
+		worker.addEventListener('message', handleMessage);
+	}, [data, handleMessage, loading]);
 
-            worker.terminate();
-        };
-    }, [data, handleMessage, loading]);
+	if (!data) {
+		return (
+			<ContentLoader
+				speed={2}
+				width={400}
+				height={160}
+				viewBox="0 0 400 160"
+				backgroundColor="#f3f3f3"
+				foregroundColor="#ecebeb"
+			>
+				<rect x="0" y="8" rx="3" ry="3" width="88" height="6" />
+				<rect x="0" y="26" rx="3" ry="3" width="52" height="6" />
+				<rect x="0" y="56" rx="3" ry="3" width="410" height="6" />
+				<rect x="0" y="72" rx="3" ry="3" width="380" height="6" />
+				<rect x="0" y="88" rx="3" ry="3" width="178" height="6" />
+				<rect x="0" y="108" rx="3" ry="3" width="88" height="6" />
+				<rect x="0" y="1026" rx="3" ry="3" width="52" height="6" />
+				<rect x="0" y="156" rx="3" ry="3" width="410" height="6" />
+				<rect x="0" y="172" rx="3" ry="3" width="380" height="6" />
+				<rect x="0" y="188" rx="3" ry="3" width="178" height="6" />
+			</ContentLoader>
+		);
+	}
 
-    if (!data) {
-        return (
-            <ContentLoader
-                speed={2}
-                width={400}
-                height={160}
-                viewBox="0 0 400 160"
-                backgroundColor="#f3f3f3"
-                foregroundColor="#ecebeb"
-            >
-                <rect x="48" y="8" rx="3" ry="3" width="88" height="6" />
-                <rect x="48" y="26" rx="3" ry="3" width="52" height="6" />
-                <rect x="0" y="56" rx="3" ry="3" width="410" height="6" />
-                <rect x="0" y="72" rx="3" ry="3" width="380" height="6" />
-                <rect x="0" y="88" rx="3" ry="3" width="178" height="6" />
-                <circle cx="20" cy="20" r="20" />
-            </ContentLoader>
-        );
-    }
-
-    return (
-        <AutoSizer disableHeight>
-            {({ width }) => (
-                <ColumnSizer
-                    columnMaxWidth={500}
-                    columnMinWidth={20}
-                    columnCount={keys.length}
-                    key="GridColumnSizer"
-                    width={ width }>
-                    {({ adjustedWidth, columnWidth, registerChild }) => (
-                        <div
-                            style={{
-                                height: '100%',
-                                width: adjustedWidth,
-                            }}
-                            className={cnJsonTable()}
-                        >
-                            <Grid
-                                ref={registerChild}
-                                columnWidth={({ index }) => getColumnWidth(index)}
-                                columnCount={keys.length}
-                                autoHeight
-                                height={data.length * 50}
-                                noContentRenderer={() => 'no data'}
-                                cellRenderer={cellRenderer}
-                                rowHeight={50}
-                                rowCount={data.length}
-                                width={adjustedWidth}
-                                overscanColumnCount={15}
-                                overscanRowCount={15}
-                            />
-                        </div>
-                    )}
-                </ColumnSizer>
-            )}
-        </AutoSizer>
-    );
+	return (
+		<AutoSizer disableHeight>
+			{({ width }) => (
+				<ColumnSizer
+					columnMaxWidth={500}
+					columnMinWidth={20}
+					columnCount={keys.length}
+					key="GridColumnSizer"
+					width={width}
+				>
+					{({ adjustedWidth, registerChild }) => (
+						<div
+							style={{
+								height: '100%',
+								width: adjustedWidth,
+							}}
+							className={cnJsonTable()}
+						>
+							<Grid
+								ref={registerChild}
+								columnWidth={widthGetter}
+								columnCount={keys.length}
+								height={height - 16}
+								noContentRenderer={noContent}
+								cellRenderer={cellRenderer}
+								rowHeight={50}
+								rowCount={data.length}
+								width={adjustedWidth}
+								overscanRowCount={15}
+							/>
+						</div>
+					)}
+				</ColumnSizer>
+			)}
+		</AutoSizer>
+	);
 }
