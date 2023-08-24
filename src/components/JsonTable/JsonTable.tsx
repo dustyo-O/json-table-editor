@@ -15,7 +15,7 @@ import Worker from 'worker-loader!../../workers/worker.ts';
 
 const noContent = () => 'n/a';
 
-export function JsonTable() {
+export function JsonTable({ token }: { token: string }) {
 	const [data, setData] = useState<undefined|DataType>(undefined);
 	const [loading, setLoading] = useState(false);
 
@@ -43,11 +43,11 @@ export function JsonTable() {
 
 		worker.postMessage([
 			'https://api.json-generator.com/templates/Pji4v88Ud9bo/data',
-			'0dnlg0e3n22tnxtyzj125ytqtk714i2cnso0tm5m',
+			token,
 		]);
 
 		worker.addEventListener('message', handleMessage);
-	}, [data, handleMessage, loading]);
+	}, [data, handleMessage, loading, token]);
 
 	if (!data) {
 		return (
