@@ -1,12 +1,18 @@
-### Запуск
+### Launch
 ```
 git clone
+nvm use
 npm ci
 npm start
 ```
 
-далее в браузере http://localhost:3000
+After that, open url http://localhost:3000 in browser
 
-После запуска попросит ключ API JSON-Generator (если нужен мой - он есть по ссылке https://onetimesecret.com/secret/70jx9nndetjmlj3v1debynv7g6bznw2 ВНИМАНИЕ! ССЫЛКА ОДНОРАЗОВАЯ!)
+Right after you launched interface, it will prompt you for API key for JSON-generator API (you can obtain mine with URL https://onetimesecret.com/secret/70jx9nndetjmlj3v1debynv7g6bznw2 - ATTENTION! LINK CAN BE USED FOR SINGLE TIME!)
 
-Если вы ввели неверный ключ, то надо очистить ключ из localStorage и после обновления страницы, интерфейс попросит ключ снова. Для этого в консоли `localStorage.removeItem('json-generator-token')`
+If you fail to enter right key, you'll have to clear key from localStorage, and, after page refresh, you'll be prompted again. To do so, just type  `localStorage.removeItem('json-generator-token')` into the development console.
+
+### Lint
+```
+npm run lint
+```
