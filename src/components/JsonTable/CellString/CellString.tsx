@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import React from 'react';
 import Tooltip from 'rc-tooltip';
 
 import { cnJsonTable } from '../JsonTable.classname';
@@ -11,7 +11,7 @@ export type CellStringProps = {
     type: 'text' | 'date' | 'number' | 'email';
 }
 
-export const CellString: FC<CellStringProps> = ({ children, onCellChange, type = 'string' }) => {
+export function CellString({ children, onCellChange, type = 'text' }: CellStringProps) {
 	const {
 		value,
 		editing,
@@ -33,16 +33,19 @@ export const CellString: FC<CellStringProps> = ({ children, onCellChange, type =
 	const editor = (
 		<form className={cnJsonTable('cell-form')} onSubmit={handleValueSave}>
 			<input className={cnJsonTable('cell-form-input')} value={value} onChange={handleChange} type={type} />
-			<button className={cnJsonTable('cell-form-button')}>OK</button>
+			<button className={cnJsonTable('cell-form-button')} type="submit">OK</button>
 			<button className={cnJsonTable('cell-form-button')} type="button" onClick={handleCancel}>Cancel</button>
 		</form>
 	);
 
 	return (
 		<Tooltip overlay={editor} visible={editing} trigger={[]}>
-			<span onDoubleClick={handleStartEdit} onMouseDown={clearSelection}>
-				{value}
-			</span>
+			{
+				// eslint-disable-next-line jsx-a11y/no-static-element-interactions
+				<span onDoubleClick={handleStartEdit} onMouseDown={clearSelection}>
+					{value}
+				</span>
+			}
 		</Tooltip>
 	);
-};
+}

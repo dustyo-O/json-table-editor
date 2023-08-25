@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Tooltip from 'rc-tooltip';
 
 import { cnJsonTable } from '../JsonTable.classname';
@@ -10,7 +10,7 @@ export type CellRadioProps = {
     onCellChange: (value: boolean) => void;
 }
 
-export const CellRadio: FC<CellRadioProps> = ({ children, onCellChange }) => {
+export function CellRadio({ children, onCellChange }: CellRadioProps) {
 	const {
 		value,
 		editing,
@@ -32,15 +32,18 @@ export const CellRadio: FC<CellRadioProps> = ({ children, onCellChange }) => {
 			false:
 			{' '}
 			<input type="radio" name={`value${id}`} onChange={handleChange} value="false" />
-			<button className={cnJsonTable('cell-form-button')}>OK</button>
+			<button type="submit" className={cnJsonTable('cell-form-button')}>OK</button>
 		</form>
 	);
 
 	return (
 		<Tooltip overlay={editor} visible={editing} trigger={[]}>
-			<span onDoubleClick={handleStartEdit} onMouseDown={clearSelection}>
-				{value.toString()}
-			</span>
+			{
+				// eslint-disable-next-line jsx-a11y/no-static-element-interactions
+				<span onDoubleClick={handleStartEdit} onMouseDown={clearSelection}>
+					{value.toString()}
+				</span>
+			}
 		</Tooltip>
 	);
-};
+}
